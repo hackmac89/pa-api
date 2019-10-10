@@ -25,7 +25,7 @@ type GetItems struct {
 
 var _ paapi5.Query = (*GetItems)(nil) //GetItems is compatible with paapi5.Query interface
 
-//New creates new GetItems instance
+//NewGetItems creates a new GetItems instance
 func NewGetItems(marketplace, partnerTag, partnerType string) *GetItems {
 	q := &GetItems{
 		OpeCode:        paapi5.GetItems,

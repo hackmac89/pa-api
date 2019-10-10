@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-//Operation is represent PA-API operation
+//Operation represents a PA-API operation
 type Operation int
 
 const (
