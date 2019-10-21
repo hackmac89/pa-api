@@ -3,7 +3,6 @@ package entity
 import (
 	"bytes"
 	"encoding/json"
-	"time"
 
 	"github.com/spiegel-im-spiegel/errs"
 )
@@ -34,7 +33,7 @@ type GenInfoFloat struct {
 }
 
 type GenInfoTime struct {
-	DisplayValue time.Time
+	DisplayValue Date
 	Label        string `json:",omitempty"`
 	Locale       string `json:",omitempty"`
 }
@@ -50,6 +49,21 @@ type Ancestor struct {
 	DisplayName     string
 	ContextFreeName string
 	Ancestor        *Ancestor `json:",omitempty"`
+}
+
+type ConditionInfo struct {
+	DisplayValue string         `json:",omitempty"`
+	Label        string         `json:",omitempty"`
+	Locale       string         `json:",omitempty"`
+	Value        string         `json:",omitempty"`
+	SubCondition *ConditionInfo `json:",omitempty"`
+}
+
+type GenPriceInfo struct {
+	Amount        float64 `json:",omitempty"`
+	Currency      string  `json:",omitempty"`
+	DisplayAmount string  `json:",omitempty"`
+	PricePerUnit  float64 `json:",omitempty"`
 }
 
 type Item struct {
@@ -111,11 +125,7 @@ type Item struct {
 				Label        string
 				Locale       string
 			}
-			PublicationDate struct {
-				DisplayValue time.Time
-				Label        string
-				Locale       string
-			}
+			PublicationDate GenInfoTime
 		} `json:",omitempty"`
 		ContentRating *struct {
 			AudienceRating GenInfo
@@ -161,6 +171,62 @@ type Item struct {
 			}
 		} `json:",omitempty"`
 	}
+	Offers *struct {
+		Listings *[]struct {
+			Availability *struct {
+				MaxOrderQuantity int
+				Message          string
+				MinOrderQuantity int
+				Type             string
+			} `json:",omitempty"`
+			Condition    *ConditionInfo `json:",omitempty"`
+			DeliveryInfo *struct {
+				IsAmazonFulfilled      bool `json:",omitempty"`
+				IsFreeShippingEligible bool `json:",omitempty"`
+				IsPrimeEligible        bool `json:",omitempty"`
+			} `json:",omitempty"`
+			ID             string `json:"Id"`
+			IsBuyboxWinner bool
+			LoyaltyPoints  *struct {
+				Points int
+			} `json:",omitempty"`
+			MerchantInfo *struct {
+				DefaultShippingCountry string
+				ID                     string `json:"Id"`
+				Name                   string
+			} `json:",omitempty"`
+			Price *struct {
+				*GenPriceInfo `json:",omitempty"`
+				Savings       *struct {
+					Amount        float64
+					Currency      string
+					DisplayAmount string
+					Percentage    int
+					PricePerUnit  float64
+				} `json:",omitempty"`
+			} `json:",omitempty"`
+			ProgramEligibility *struct {
+				IsPrimeExclusive bool
+				IsPrimePantry    bool
+			} `json:",omitempty"`
+			Promotions *[]struct {
+				Amount          float64
+				Currency        string
+				DiscountPercent string
+				DisplayAmount   string
+				PricePerUnit    float64
+				Type            string
+			} `json:",omitempty"`
+			SavingBasis *GenPriceInfo `json:",omitempty"`
+			ViolateMAP  bool
+		} `json:",omitempty"`
+		Summaries *[]struct {
+			Condition    *ConditionInfo `json:",omitempty"`
+			HighestPrice *GenPriceInfo  `json:",omitempty"`
+			LowestPrice  *GenPriceInfo  `json:",omitempty"`
+			OfferCount   int
+		} `json:",omitempty"`
+	} `json:",omitempty"`
 }
 
 type Refinement struct {
@@ -237,7 +303,7 @@ func (r *Response) String() string {
 	return string(b)
 }
 
-/* Copyright 2019 Spiegel
+/* Copyright 2019 Spiegel and contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
